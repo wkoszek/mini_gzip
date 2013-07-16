@@ -1,7 +1,8 @@
-SRCS+=	mini_gzip.c miniz.c
-CFLAGS= -D_POSIX_C_SOURCE=200112L -D_BSD_SOURCE
-CFLAGS+= -g -std=c99 -pedantic
-CFLAGS+= -DTEST_PROG
+SRCS+=		mini_gzip.c miniz.c
+CFLAGS=		-D_POSIX_C_SOURCE=200112L -D_BSD_SOURCE
+CFLAGS+=	-g -std=c99 -pedantic
+CFLAGS+=	-DTEST_PROG
+CFLAGS+=	-DMINI_GZ_DEBUG
 
 all: mini_gzip
 

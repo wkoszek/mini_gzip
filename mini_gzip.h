@@ -30,23 +30,26 @@ extern void	mini_gz_chunksize_set(struct mini_gzip *gz_ptr, int chunk_size);
 extern void	mini_gz_init(struct mini_gzip *gz_ptr);
 extern int	mini_gz_unpack(struct mini_gzip *gz_ptr, void *mem_out, size_t mem_out_len);
 
-#define	func_printf	printf
+#define	func_fprintf	fprintf
+#define	func_fflush	fflush
+
+#define	MINI_GZ_STREAM	stderr
 
 #ifdef MINI_GZ_DEBUG
 #define	GZAS(comp, ...)	do {						\
 	if (!((comp))) {						\
-		func_printf(stderr, "Error: ");				\
-		func_fprintf(stderr, __VA_ARGS__);			\
-		func_fprintf(stderr, ", %s:%d\n", __func__, __LINE__);	\
-		func_fflush(stderr);					\
+		func_fprintf(MINI_GZ_STREAM, "Error: ");				\
+		func_fprintf(MINI_GZ_STREAM, __VA_ARGS__);			\
+		func_fprintf(MINI_GZ_STREAM, ", %s:%d\n", __func__, __LINE__);	\
+		func_fflush(MINI_GZ_STREAM);					\
 		exit(1);						\
 	}								\
 } while (0)
 
 #define	GZDBG(...) do {					\
-	func_printf("%s:%d ", __func__, __LINE__);	\
-	func_printf(__VA_ARGS__);			\
-	func_printf("\n");				\
+	func_fprintf(MINI_GZ_STREAM, "%s:%d ", __func__, __LINE__);	\
+	func_fprintf(MINI_GZ_STREAM, __VA_ARGS__);			\
+	func_fprintf(MINI_GZ_STREAM, "\n");				\
 } while (0)
 #else	/* MINI_GZ_DEBUG */
 #define	GZAS(comp, ...)	

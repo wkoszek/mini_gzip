@@ -14,6 +14,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef MINI_GZ_DEBUG
+#include <stdio.h>
+#endif
+
 #include "miniz.h"
 #include "mini_gzip.h"
 
