@@ -10,19 +10,9 @@
  * while the key objective was to perform memory-to-memory operations
  */
 
-#include <sys/param.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <assert.h>
-#include <err.h>
-#include <fcntl.h>
-#include <stdarg.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <string.h>
-#include <strings.h>
-#include <unistd.h>
 
 #include "miniz.h"
 #include "mini_gzip.h"
@@ -46,7 +36,7 @@ mini_gz_start(struct mini_gzip *gz_ptr, void *mem, size_t mem_len)
 	gz_ptr->chunk_size = 1024;
 
 	if (hptr[0] != 0x1F || hptr[1] != 0x8B) {
-		printf("hptr[0] = %02x hptr[1] = %02x\n", hptr[0], hptr[1]);
+		GZDBG("hptr[0] = %02x hptr[1] = %02x\n", hptr[0], hptr[1]);
 		return (-1);
 	}
 	if (hptr[2] != 8) {

@@ -22,16 +22,6 @@
 #include "miniz.h"
 #include "mini_gzip.h"
 
-#define	GAS(comp, ...)	do {					\
-	if (!((comp))) {						\
-		fprintf(stderr, "Error: ");				\
-		fprintf(stderr, __VA_ARGS__);				\
-		fprintf(stderr, ", %s:%d\n", __func__, __LINE__);	\
-		fflush(stderr);						\
-		exit(1);						\
-	}								\
-} while (0)
-
 int
 main(int argc, char **argv)
 {
@@ -65,7 +55,7 @@ main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	GAS(argc == 2, "2 file names must be passed: input and output file");
+	GZAS(argc == 2, "2 file names must be passed: input and output file");
 
 	is_gzipped = 0;
 	sptr = strstr(argv[0], ".gz");
@@ -75,9 +65,9 @@ main(int argc, char **argv)
 	printf("flag_c: %d is_gzipped: %d\n", flag_c, is_gzipped);
 
 	if (is_gzipped) {
-		GAS(flag_c == 0, "Requesting to compress .gz file? Looks wrong");
+		GZAS(flag_c == 0, "Requesting to compress .gz file? Looks wrong");
 	} else {
-		GAS(flag_c == 1, "Requesting to decompress normal file?");
+		GZAS(flag_c == 1, "Requesting to decompress normal file?");
 	}
 
 	snprintf(in_fn, sizeof(in_fn) - 1, "%s", argv[0]);
@@ -87,18 +77,18 @@ main(int argc, char **argv)
 
 	mem_in = calloc(1024*1024, 1);
 	mem_out = calloc(1024*1024, 1);
-	GAS(mem_in != NULL, "Couldn't allocate memory for input file");
-	GAS(mem_out != NULL, "Couldn't allocate memory for output file");
+	GZAS(mem_in != NULL, "Couldn't allocate memory for input file");
+	GZAS(mem_out != NULL, "Couldn't allocate memory for output file");
 
 	in_fd = open(in_fn, O_RDONLY);
-	GAS(in_fd != -1, "Couldn't open file %s for reading", in_fn);
+	GZAS(in_fd != -1, "Couldn't open file %s for reading", in_fn);
 	ret = fstat(in_fd, &st);
-	GAS(ret == 0, "Couldn't call fstat(), %d returned", ret);
+	GZAS(ret == 0, "Couldn't call fstat(), %d returned", ret);
 	ret = read(in_fd, mem_in, st.st_size);
-	GAS(ret == st.st_size, "Read only %d bytes, %jd expected", ret,
+	GZAS(ret == st.st_size, "Read only %d bytes, %jd expected", ret,
 							(uintmax_t)st.st_size);
 	out_fd = open(out_fn, O_WRONLY|O_CREAT, st.st_mode);
-	GAS(out_fd != -1, "Couldn't create output file '%s' for writing",
+	GZAS(out_fd != -1, "Couldn't create output file '%s' for writing",
 								out_fn);
 
 	if (flag_c) {
@@ -111,17 +101,17 @@ main(int argc, char **argv)
 		printf("out_len = %d\n", out_len);
 		ret = write(out_fd, mem_out, out_len);
 		printf("ret = %d\n", ret);
-		GAS(ret == out_len, "Wrote only %d bytes, expected %d", ret, out_len);
+		GZAS(ret == out_len, "Wrote only %d bytes, expected %d", ret, out_len);
 #endif
 	} else {
 		printf("--- testing decompression --\n");
 		ret = mini_gz_start(&gz, mem_in, st.st_size);
-		GAS(ret == 0, "mini_gz_start() failed, ret=%d", ret);
+		GZAS(ret == 0, "mini_gz_start() failed, ret=%d", ret);
 		out_len = mini_gz_unpack(&gz, mem_out, 1024*1024);
 		printf("out_len = %d\n", out_len);
 		ret = write(out_fd, mem_out, out_len);
 		printf("ret = %d\n", ret);
-		GAS(ret == out_len, "Wrote only %d bytes, expected %d", ret, out_len);
+		GZAS(ret == out_len, "Wrote only %d bytes, expected %d", ret, out_len);
 	}
 	close(in_fd);
 	close(out_fd);
