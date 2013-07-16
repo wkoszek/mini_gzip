@@ -1,13 +1,15 @@
 SRCS+=	mini_gzip.c miniz.c
 CFLAGS= -D_POSIX_C_SOURCE=200112L -D_BSD_SOURCE
-CFLAGS= -g -std=c99 -pedantic
+CFLAGS+= -g -std=c99 -pedantic
 CFLAGS+= -DTEST_PROG
 
 all: mini_gzip
 
-mini_gzip: mini_gzip.c makefile
-	gcc -Wall -pedantic -c mini_gzip.c
-	gcc $(CFLAGS) -DTEST_PROG mini_gzip.c miniz.c -o mini_gzip
+mini_gzip: mini_gzip.c mini_gzip_testprog.c miniz.c makefile
+	gcc $(CFLAGS) -Wall -c mini_gzip.c
+	gcc $(CFLAGS) -Wall -c mini_gzip_testprog.c
+	gcc $(CFLAGS) -Wall -c miniz.c
+	gcc $(CFLAGS) -Wall mini_gzip.o mini_gzip_testprog.o miniz.o -o mini_gzip
 
 clean:
 	rm -rf mini_gzip mini_gzip.d* *.o
