@@ -346,8 +346,12 @@ typedef int mz_bool;
 #define MZ_FALSE (0)
 #define MZ_TRUE (1)
 
+#ifndef __WIN__
+#define MZ_MACRO_END while (0)
+#else
 // Works around MSVC's spammy "warning C4127: conditional expression is constant" message.
 #define MZ_MACRO_END while (0, 0)
+#endif
 
 // ------------------- Low-level Decompression API Definitions
 
@@ -631,7 +635,6 @@ typedef unsigned char mz_validate_uint64[sizeof(mz_uint64)==8 ? 1 : -1];
 
 static void *def_alloc_func(void *opaque, size_t items, size_t size) { (void)opaque; return MZ_MALLOC(items * size); }
 static void def_free_func(void *opaque, void *address) { (void)opaque, MZ_FREE(address); }
-static void *def_realloc_func(void *opaque, void *address, size_t items, size_t size) { (void)opaque; return MZ_REALLOC(address, items * size); }
 
 mz_ulong mz_adler32(mz_ulong adler, const unsigned char *ptr, size_t buf_len)
 {
@@ -772,7 +775,7 @@ int mz_deflateEnd(mz_streamp pStream)
 
 mz_ulong mz_deflateBound(mz_streamp pStream, mz_ulong source_len)
 {
-  pStream;
+  (void)pStream;
   // This is really over conservative. (And lame, but it's actually pretty tricky to compute a true upper bound given the way tdefl's blocking works.)
   return MZ_MAX(128 + (source_len * 110) / 100, 128 + source_len + ((source_len / (31 * 1024)) + 1) * 5);
 }
