@@ -2,5 +2,5 @@ language: c
 compiler:
 - clang
 - gcc
-before_install:
+script:
 - make test
