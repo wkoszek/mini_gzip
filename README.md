@@ -59,3 +59,8 @@ To test by yourself, you can do:
 	wk:/w/repos/mini_gzip> md5 miniz.o
 	MD5 (miniz.o) = e6199aade2020b6040fa160baee47d68
 ~~~
+
+# Author
+
+- Wojciech Adam Koszek, [wojciech@koszek.com](mailto:wojciech@koszek.com)
+- [http://www.koszek.com](http://www.koszek.com)
