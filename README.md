@@ -60,6 +60,13 @@ To test by yourself, you can do:
 	MD5 (miniz.o) = e6199aade2020b6040fa160baee47d68
 ~~~
 
+# References
+
+After publishing `mini_gzip` on HackerNews, byuu (http://byuu.org/) mentioned he has much leaner implementation of GZIP:
+
+- https://gitlab.com/higan/higan/blob/master/nall/decode/gzip.hpp
+- https://gitlab.com/higan/higan/blob/master/nall/decode/inflate.hpp
+
 # Author
 
 - Wojciech Adam Koszek, [wojciech@koszek.com](mailto:wojciech@koszek.com)
