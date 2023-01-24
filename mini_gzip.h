@@ -1,6 +1,9 @@
 #ifndef _MINI_GZIP_H_
 #define _MINI_GZIP_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 #define MAX_PATH_LEN		1024
 #define	MINI_GZ_MIN(a, b)	((a) < (b) ? (a) : (b))
 
