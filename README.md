@@ -24,7 +24,7 @@ Everything should be fairly self-contained, and built with:
 
 # How to use
 
-The API operates on `struct mini_gz` structures, which are containers for
+The API operates on `struct mini_gzip` structures, which are containers for
 the memory with GZIPed data. You must call `mini_gz_init()` on the structure
 1st for the rest of the API to work correctly. Next, you must call
 `mini_gz_start(&gz, mem_in, size)`, where `gz` is the initialized container
