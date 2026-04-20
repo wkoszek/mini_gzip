@@ -29,6 +29,9 @@ test: mini_gzip
 	@ls -la data.o
 	diff data.o data
 	
+	@echo "# ------------------ Uncompress test_MZ_STREAM_END.gz with mini_gzip"
+	./mini_gzip -d test_MZ_STREAM_END.gz test_MZ_STREAM_END.o
+		
 notyet:
 	@echo "# ------------------ Compress with mini_gzip and gzip and compare"
 	gzip -9c data > data_sys_gzip.gz

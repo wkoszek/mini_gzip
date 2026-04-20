@@ -30,6 +30,7 @@ main(int argc, char **argv)
 	char	in_fn[MAX_PATH_LEN], out_fn[MAX_PATH_LEN];
 	char	*sptr, *mem_in, *mem_out;
 	int	level, flag_c, o, in_fd, out_fd, ret, is_gzipped, out_len;
+	int uncomp_len, i;
 
 	level = 6;
 	flag_c = 0;
@@ -87,6 +88,17 @@ main(int argc, char **argv)
 	ret = read(in_fd, mem_in, st.st_size);
 	GZAS(ret == st.st_size, "Read only %d bytes, %jd expected", ret,
 							(uintmax_t)st.st_size);
+	
+	/* last 4 bytes of the gzip file contain the uncompressed data size */
+	/* mod 2^32, little endian. RFC 1952 */
+	uncomp_len = 0;
+	if (st.st_size > 4) {
+	    for (i = st.st_size - 1; i >= st.st_size - 4; --i) {
+	        uncomp_len = (uncomp_len << 8) | (unsigned char)mem_in[i];
+	    }
+	}
+	printf("uncomp_len = %d\n", uncomp_len);
+
 	out_fd = open(out_fn, O_WRONLY|O_CREAT, st.st_mode);
 	GZAS(out_fd != -1, "Couldn't create output file '%s' for writing",
 								out_fn);
@@ -107,8 +119,10 @@ main(int argc, char **argv)
 		printf("--- testing decompression --\n");
 		ret = mini_gz_start(&gz, mem_in, st.st_size);
 		GZAS(ret == 0, "mini_gz_start() failed, ret=%d", ret);
-		out_len = mini_gz_unpack(&gz, mem_out, 1024*1024);
+		/* output size given is exactly the length required, no more, no less */
+		out_len = mini_gz_unpack(&gz, mem_out, uncomp_len);
 		printf("out_len = %d\n", out_len);
+		GZAS(out_len == uncomp_len, "Uncompressed only %d bytes, expected %d", out_len, uncomp_len);
 		ret = write(out_fd, mem_out, out_len);
 		printf("ret = %d\n", ret);
 		GZAS(ret == out_len, "Wrote only %d bytes, expected %d", ret, out_len);
