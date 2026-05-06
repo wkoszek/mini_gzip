@@ -99,7 +99,7 @@ int
 mini_gz_unpack(struct mini_gzip *gz_ptr, void *mem_out, size_t mem_out_len)
 {
 	z_stream s;
-	int	ret, in_bytes_avail, bytes_to_read;
+	int	ret, in_bytes_avail, bytes_to_read, runout;
 
 	assert(gz_ptr != 0);
 	assert(gz_ptr->data_len > 0);
@@ -111,12 +111,19 @@ mini_gz_unpack(struct mini_gzip *gz_ptr, void *mem_out, size_t mem_out_len)
 	s.avail_out = mem_out_len;
 	s.next_in = gz_ptr->data_ptr;
 	s.next_out = mem_out;
+	runout = 16;
 	for (;;) {
 		bytes_to_read = MINI_GZ_MIN(gz_ptr->chunk_size, in_bytes_avail);
 		s.avail_in += bytes_to_read;
 		ret = mz_inflate(&s, MZ_SYNC_FLUSH);
 		in_bytes_avail -= bytes_to_read;
-		if (s.avail_out == 0 && in_bytes_avail != 0) {
+		
+		// FIX 2023-06-09, MZ_STREAM_END must be tested before testing output buffer is full
+		if (ret == MZ_STREAM_END) {
+			break;
+		}
+		// FIX 2024-11-10, do this test more than once, as may still get MZ_STREAM_END if we keep going
+		if (s.avail_out == 0 && in_bytes_avail != 0 && --runout == 0) {
 			return (-3);
 		}
 		assert(ret != MZ_BUF_ERROR);
@@ -125,9 +132,6 @@ mini_gz_unpack(struct mini_gzip *gz_ptr, void *mem_out, size_t mem_out_len)
 		}
 		if (ret == MZ_DATA_ERROR) {
 			return (-2);
-		}
-		if (ret == MZ_STREAM_END) {
-			break;
 		}
 	}
 	ret = inflateEnd(&s);
